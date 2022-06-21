@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+            
+            <style type="text/css">
+                body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+                #allmap{height:100%;width:100%;}
+                #r-result{width:100%; font-size:14px;}
+            </style>
+            <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=IjLhjSLMm7VAUWMWELjWgezl75lukHxb"></script>
+            
+            <title>经纬度定位</title>
+        </head>
+        <body>
+            <div id="allmap"></div>
+            <!--<div id="r-result">-->
+                经度: <input id="longitude" type="text" style="width:100px; margin-right:10px;" />
+                纬度: <input id="latitude" type="text" style="width:100px; margin-right:10px;" />
+                <input type="button" value="查询" onclick="theLocation()" />
+           </div>
+        </body>
+        </html>
+        <script type="text/javascript">
+            // 百度地图API功能
+            var bm = new BMap.Map("allmap");
+            bm.centerAndZoom(new BMap.Point(116.404026,39.915147), 18);
+            bm.enableScrollWheelZoom(true);
+           /*var x= 116.304;
+           var y = 40.0685;
+           var ggPoint = new BMap.Point(x,y);
+           var marker = new BMap.Marker(ggPoint);  // 创建标注
+           map.addOverlay(marker); 
+           map.panTo(ggPoint);*/
+            // 用经纬度设置地图中心点
+           
+            function theLocation(){
+                if(document.getElementById("longitude").value != "" && document.getElementById("latitude").value != ""){
+                    map.clearOverlays();
+                    var new_point = new BMap.Point(document.getElementById("longitude").value,document.getElementById("latitude").value);
+                    var marker = new BMap.Marker(new_point);  // 创建标注
+                    map.addOverlay(marker);              // 将标注添加到地图中
+                    map.panTo(new_point);
+                }
+            }
+
+
+ function addpoint (longitude,latitude){
+               
+               //var x= 116.304;
+               //var y = 40.0685;
+                var ggPoint = new BMap.Point(longitude,latitude);
+                var convertor = new BMap.Convertor();
+                var pointArr = [];
+               
+                 pointArr.push(ggPoint);
+                 
+                convertor.translate(pointArr, 1, 5, translateCallback)
+            }
+
+            //坐标转换完之后的回调函数
+    translateCallback = function (data){
+      if(data.status === 0) {
+        var marker = new BMap.Marker(data.points[0]);
+        bm.addOverlay(marker);
+        var label = new BMap.Label("您的当前位置",{offset:new BMap.Size(10, -10)});
+        marker.setLabel(label); //添加百度label
+        bm.setCenter(data.points[0]);
+      }
+    }
+
+        </script>
+        
