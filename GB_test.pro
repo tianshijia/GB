@@ -47,3 +47,16 @@ RESOURCES += \
     file.qrc
 
 DISTFILES +=
+
+#版本信息
+VERSION = 2.1.3
+#作者名称
+QMAKE_TARGET_COMPANY = "Tianshijia"
+#产品名称
+QMAKE_TARGET_PRODUCT = "GB_NMEA0183"
+#文件说明
+QMAKE_TARGET_DESCRIPTION = "Qt 5.14.2 (MinGW 64 bit)"
+#版权信息
+QMAKE_TARGET_COPYRIGHT = "Public"
+#中文（简体）
+RC_LANG = 0x0004
