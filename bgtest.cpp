@@ -19,8 +19,6 @@ BGTEST::BGTEST(QWidget *parent) :
     //安装事件过滤器
     ui->widget->installEventFilter(this);
 
-    //ui->receiveDate->document()->setMaximumBlockCount(40);  //设置显示最多为40行
-
     //为线程对象申请内存空间
     mythread_gpgsv_analysis = new mythread;
     thread_gpgsv_analysis   = new QThread;
@@ -73,6 +71,9 @@ BGTEST::BGTEST(QWidget *parent) :
     timer_saveFile  = new QTimer;//保存文件定时器
     connect(timer_saveFile,&QTimer::timeout,this,&BGTEST::save_file);
     file_flag = false;
+
+    ui->label_24->hide();
+    ui->label_25->hide();
 
     QString mapHtml;
     mapHtml=QDir::currentPath()+"../my1.html";
@@ -233,9 +234,7 @@ void BGTEST::recv_gsvdata(QList<int> gpgsv, QList<int> bdgsv)
 
 void BGTEST::recv_gga_gsa_data(QStringList gngga_data, QStringList gpgsa_data, QStringList bdgsa_data,QStringList gnvtg_data)
 {
-    //qDebug()<<"gpgsa:"<<gpgsa_data;
-   // qDebug()<<"bdgsa:"<<bdgsa_data;
-    //qDebug()<<"gngga:"<<gngga_data;
+
     if(!gngga_data.isEmpty()){
        // ui->time_lineEdit->setText(gngga_data[0]);
         ui->latitude->setText(gngga_data[0]+"   "+gngga_data[1]);
@@ -244,8 +243,6 @@ void BGTEST::recv_gga_gsa_data(QStringList gngga_data, QStringList gpgsa_data, Q
         lat = gngga_data[0];
         lon = gngga_data[2];
         height = gngga_data[4];
-        //qDebug()<<"lat"<<lat;
-        //qDebug()<<"lon"<<lon;
         if(!lat.isEmpty()&&!lon.isEmpty()&& !height.isEmpty()){
             emit send_lat_lon_height(lat,lon,height);
         }
@@ -611,6 +608,9 @@ void BGTEST::on_action_triggered()
         int j = f.size();
        ui->readfile_progressBar->setMaximum(j);
         ui->action->setText("正在读取");
+        ui->label_24->show();
+        ui->label_25->show();
+        ui->label_25->setText(QString::number(f.size()/1024)+"KB");
     }
     else if(ui->action->text() == "正在读取") {
        ui->action->setText("读取文件回放");
@@ -620,6 +620,9 @@ void BGTEST::on_action_triggered()
        file_flag = false;
        ui->readfile_progressBar->setValue(0);
        readfile_length = 0;
+       ui->label_24->hide();
+       ui->label_25->hide();
+       ui->label_25->clear();
     }
 
 
@@ -634,14 +637,17 @@ void BGTEST::on_action_2_triggered()
             timer_saveFile->start(1000);
             savefile_flag = true;
             file_zhengduan = false;
+            ui->label_24->show();
+            ui->label_25->show();
         }
     }
     else if(ui->action_2->text() == "停止保存"){
         ui->action_2->setText("保存原始文件");
         file_zhengduan = true;
-
-        QString messagebox = QString("%1%2%3").arg("文件大小为: ").arg(f.size()).arg("  byte");
+        messagebox = QString("%1%2%3").arg("文件大小为: ").arg(f.size()).arg("  byte");
         QMessageBox::warning(this,"提示!",messagebox);
+        ui->label_24->hide();
+        ui->label_25->hide();
     }
 }
 
@@ -652,7 +658,7 @@ void BGTEST::save_file(){
         stream << file_buffer;
         file_buffer.clear();
     }
-     if(file_zhengduan == true && file_buffer.contains("GPTXT")&&file_buffer.contains("\r\n")){
+     if(file_zhengduan == true){
          timer_saveFile->stop();
          //qDebug()<<"到达这里";
         f.close();
@@ -661,6 +667,7 @@ void BGTEST::save_file(){
         file_buffer.clear();
     }
 
+    ui->label_25->setText(QString::number(f.size()/1024)+"KB");
 }
 
 void BGTEST::paint_location_error(double lat, double lon)

@@ -25,7 +25,6 @@ void mythread::gsv_jiexi(QStringList gpgsv_data, QStringList bdgsv_data)
               ("GPGSV", "3", "2", "12", "22", "31", "288", "", "23", "52", "158", "37", "24", "33", "052", "22", "25", "36", "147", "32*7")
               ("GPGSV", "3", "3", "12", "31", "16", "230", "41", "32", "51", "304", "30", "194", "45", "132", "33", "199", "42", "164", "32*7")
             */
-           //qDebug()<<datalist1.length();
            if(datalist1.length()/4==5){
                for(int j=4;j<20;j++){
                    gpgsv.append(datalist1[j].toUInt());

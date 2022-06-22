@@ -91,7 +91,7 @@ public:
      QTimer *timer_saveFile;//保存文件定时器
      void save_file();
      QString file_buffer;
-
+     QString messagebox;
      //两次定位偏差
      double now_lat = 40.065759333;
      double now_lon = 116.301878167;
