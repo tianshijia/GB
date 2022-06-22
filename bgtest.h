@@ -81,10 +81,12 @@ public:
      unsigned int readfile_speed = 500;
      QTimer *readfieltimer;
      long int readfile_length = 0;
+     long int readcount = 0;
      int over_value = 100;
      void read_filedata();
      bool openfile_flag = false;
      bool savefile_flag = false;
+     bool file_zhengduan = false;
      QString path;
      QTimer *timer_saveFile;//保存文件定时器
      void save_file();

@@ -65,7 +65,6 @@ BGTEST::BGTEST(QWidget *parent) :
 
     //设置文件属性
      path = qApp->applicationDirPath() + "/data.txt";
-    //qDebug()<<path;
     f.setFileName(path);
     readfieltimer = new QTimer(this);
     connect(ui->timerSlider,&QSlider::valueChanged,this,[&]{readfieltimer->start(ui->timerSlider->value());});
@@ -75,7 +74,6 @@ BGTEST::BGTEST(QWidget *parent) :
     connect(timer_saveFile,&QTimer::timeout,this,&BGTEST::save_file);
     file_flag = false;
 
-
     QString mapHtml;
     mapHtml=QDir::currentPath()+"../my1.html";
     ui->axWidget->setControl(QString::fromUtf8("{8856F961-340A-11D0-A96B-00C04FD705A2}"));//注册组件UUID
@@ -83,14 +81,9 @@ BGTEST::BGTEST(QWidget *parent) :
     ui->axWidget->setProperty("DisplayAlerts",false);    //不显示任何警告信息。
     ui->axWidget->dynamicCall("Navigate(const QString&)",mapHtml);
 
-    //地图禁止缩小放大
-    //ui->groupBox_4->setEnabled(false);
-    //ui->groupBox_2->setMaximumWidth(370);
-    //ui->widget_2->setMaximumWidth(690);
     paint(); //绘制星空图
 
-
-  QPixmap myPix("./2.png");
+    QPixmap myPix(":/new/2.png");
      ui->label_16->setPixmap(myPix);
     ui->label_16->setScaledContents(true);
 
@@ -420,7 +413,7 @@ int BGTEST::getGSV(QByteArray date)
             emit send_gsv_data(mygpsdata.GPS_GSV_data,mygpsdata.BD_GSV_data);
            emit send_gga_gsa_data(mygpsdata.GGA_data,mygpsdata.GPSGSA_data,mygpsdata.BDGSA_data,mygpsdata.GNVTG_data);
             emit send_gga_data(mygpsdata.GGA_data);
-            qDebug()<<"串口发送给线程GPS:"<<mygpsdata.GNVTG_data;
+            //qDebug()<<"串口发送给线程GPS:"<<mygpsdata.GNVTG_data;
             mygpsdata.GPS_GSV_data.clear();
             mygpsdata.BD_GSV_data.clear();
             mygpsdata.GGA_data.clear();
@@ -528,37 +521,36 @@ void BGTEST::read_filedata()
         }
     }
     QString data;
-    QTextStream txtInput(&f);
     QString lineStr;
+
     //读取数据段 以$GPTXT子帧结束
     while(!f.atEnd())
     {
         lineStr = f.readLine();
         data.append(lineStr);
-        this->readfile_length = this->readfile_length  + lineStr.length()+1;
-        if(lineStr.contains("GPTXT")==true)
+        //readcount++;
+        this->readfile_length = this->readfile_length  + lineStr.length() + 1;
+       if(lineStr.contains("GPTXT")==true)
         {
             ui->receiveDate->insertPlainText(data);
             ui->receiveDate->moveCursor(QTextCursor::End);
-            break;
+          break;
 
         }
+
     }
     //更新进度条
-    ui->readfile_progressBar->setValue(this->readfile_length);
-    if(this->readfile_length > f.size()){
-        readfieltimer->stop();
-        this->f.close();
-        this->openfile_flag = false;
-        file_flag = false;
-
-    }
+    //qDebug()<<"读取文件："<<readfile_length;
+    //qDebug()<<"文件大小："<<f.size();
+   // qDebug()<<"文件行数："<<readcount;
+    ui->readfile_progressBar->setValue(readfile_length);
 
     QStringList datalist = data.split("$");
-
-    for (int i=0;i<datalist.length();i++) {
+    //qDebug()<<datalist;
+     for (int i=0;i<datalist.length();i++) {
         if(datalist[i].contains("GPGSV")){
             mygpsdata.GPS_GSV_data.append(datalist[i]);
+            //qDebug()<<mygpsdata.GPS_GSV_data;
         }
         else if (datalist[i].contains("BDGSV")) {
             mygpsdata.BD_GSV_data.append(datalist[i]);
@@ -578,6 +570,7 @@ void BGTEST::read_filedata()
 
     }
 
+
     emit send_gsv_data(mygpsdata.GPS_GSV_data,mygpsdata.BD_GSV_data);
     emit send_gga_gsa_data(mygpsdata.GGA_data,mygpsdata.GPSGSA_data,mygpsdata.BDGSA_data,mygpsdata.GNVTG_data);
      emit send_gga_data(mygpsdata.GGA_data);
@@ -588,9 +581,6 @@ void BGTEST::read_filedata()
      mygpsdata.GPSGSA_data.clear();
      mygpsdata.BDGSA_data.clear();
      mygpsdata.GNVTG_data.clear();
-
-    //f.close();
-
     data.clear();
 
 }
@@ -599,12 +589,6 @@ void BGTEST::read_filedata()
 void BGTEST::on_dingwei_clicked()
 {
     if(!lon.isEmpty() && !lat.isEmpty()){
-
-
-         //lon="116.304";
-         //lat="40.0685";
-         //QString longitude = "116.31678410674";//经度
-         //QString latitude = "40.075804994789";//纬度
 
             QString fun=QString("addpoint(%1,%2)").arg(lon).arg(lat);
             QAxObject *document = ui->axWidget->querySubObject("Document");
@@ -624,7 +608,8 @@ void BGTEST::on_action_triggered()
         ui->timerSlider->setEnabled(true);
         readfieltimer->start(ui->timerSlider->value()*readfile_speed);
         connect(readfieltimer,&QTimer::timeout,this,[&]{read_filedata();});
-        ui->readfile_progressBar->setMaximum(f.size());
+        int j = f.size();
+       ui->readfile_progressBar->setMaximum(j);
         ui->action->setText("正在读取");
     }
     else if(ui->action->text() == "正在读取") {
@@ -634,6 +619,7 @@ void BGTEST::on_action_triggered()
        this->openfile_flag = false;
        file_flag = false;
        ui->readfile_progressBar->setValue(0);
+       readfile_length = 0;
     }
 
 
@@ -647,25 +633,34 @@ void BGTEST::on_action_2_triggered()
             f.open(QIODevice::WriteOnly);
             timer_saveFile->start(1000);
             savefile_flag = true;
+            file_zhengduan = false;
         }
     }
     else if(ui->action_2->text() == "停止保存"){
         ui->action_2->setText("保存原始文件");
-        f.close();
-        timer_saveFile->stop();
-        savefile_flag = false;
-        serialdata.clear();
-        QString messagebox = QString("%1%2%3").arg("文件大小为:").arg(f.size()).arg("  byte");
-        qDebug()<< messagebox;
+        file_zhengduan = true;
+
+        QString messagebox = QString("%1%2%3").arg("文件大小为: ").arg(f.size()).arg("  byte");
         QMessageBox::warning(this,"提示!",messagebox);
     }
 }
 
 void BGTEST::save_file(){
     QTextStream stream(&f);
-    //qDebug()<<file_buffer;
-    stream << file_buffer;
-    file_buffer.clear();
+    QString left_f;
+    if(file_buffer.contains("GPTXT")&& file_buffer.contains("\r\n")){
+        stream << file_buffer;
+        file_buffer.clear();
+    }
+     if(file_zhengduan == true && file_buffer.contains("GPTXT")&&file_buffer.contains("\r\n")){
+         timer_saveFile->stop();
+         //qDebug()<<"到达这里";
+        f.close();
+        savefile_flag = false;
+        serialdata.clear();
+        file_buffer.clear();
+    }
+
 }
 
 void BGTEST::paint_location_error(double lat, double lon)

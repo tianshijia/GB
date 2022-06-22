@@ -42,3 +42,8 @@ FORMS += \
         bgtest.ui
 
 RC_ICONS += satellite.ico
+
+RESOURCES += \
+    file.qrc
+
+DISTFILES +=

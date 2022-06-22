@@ -63,6 +63,7 @@
     translateCallback = function (data){
       if(data.status === 0) {
         var marker = new BMap.Marker(data.points[0]);
+        bm.clearOverlays(); //删除所有点  
         bm.addOverlay(marker);
         var label = new BMap.Label("您的当前位置",{offset:new BMap.Size(10, -10)});
         marker.setLabel(label); //添加百度label
