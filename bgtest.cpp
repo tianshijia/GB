@@ -538,7 +538,7 @@ void BGTEST::read_filedata()
     }
     //更新进度条
     qDebug()<<"读取文件："<<readfile_length;
-    //qDebug()<<"文件大小："<<f.size();
+    qDebug()<<"文件大小："<<f.size();
    // qDebug()<<"文件行数："<<readcount;
     ui->readfile_progressBar->setValue(readfile_length);
 
