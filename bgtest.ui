@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1160</width>
-    <height>850</height>
+    <width>1108</width>
+    <height>841</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -674,7 +674,7 @@ font: 14pt &quot;Agency FB&quot;;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1160</width>
+     <width>1108</width>
      <height>23</height>
     </rect>
    </property>

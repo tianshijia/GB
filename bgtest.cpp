@@ -524,6 +524,7 @@ void BGTEST::read_filedata()
     while(!f.atEnd())
     {
         lineStr = f.readLine();
+       // qDebug()<<"linestr.size():"<<lineStr.size()<<lineStr;//一个 \n 占2字节
         data.append(lineStr);
         //readcount++;
         this->readfile_length = this->readfile_length  + lineStr.length() + 1;
@@ -537,8 +538,8 @@ void BGTEST::read_filedata()
 
     }
     //更新进度条
-    qDebug()<<"读取文件："<<readfile_length;
-    qDebug()<<"文件大小："<<f.size();
+   // qDebug()<<"读取文件："<<readfile_length;
+   // qDebug()<<"文件大小："<<f.size();
    // qDebug()<<"文件行数："<<readcount;
     ui->readfile_progressBar->setValue(readfile_length);
 
@@ -660,6 +661,7 @@ void BGTEST::save_file(){
     }
      if(file_zhengduan == true){
          timer_saveFile->stop();
+         file_buffer.append("\n");
          //qDebug()<<"到达这里";
         f.close();
         savefile_flag = false;
